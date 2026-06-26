@@ -1,0 +1,28 @@
+{
+  "name": "@thecenturion/code",
+  "version": "0.0.0",
+  "description": "Centurion Code: the autonomous coding agent that orchestrates the AI CLIs you already pay for. Installs the native binary, no source.",
+  "bin": {
+    "centurion": "bin/centurion.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/download.js || true"
+  },
+  "files": [
+    "bin/centurion.js",
+    "scripts/download.js",
+    "EULA.md",
+    "README.md"
+  ],
+  "license": "SEE LICENSE IN EULA.md",
+  "homepage": "https://thecenturion.co",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Thecenturion-co/Centurion-Code.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "os": ["darwin", "linux", "win32"],
+  "cpu": ["x64", "arm64"]
+}

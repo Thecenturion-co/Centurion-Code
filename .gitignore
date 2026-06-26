@@ -1,0 +1,9 @@
+# This is a code-less front-door repo. Never commit binaries or secrets here.
+release/
+*.tar.gz
+*.zip
+*.p8
+*.pem
+node_modules/
+.DS_Store
+RELEASE-PIPELINE/
