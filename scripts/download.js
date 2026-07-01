@@ -23,6 +23,7 @@ function assetName() {
     'darwin/x64': 'centurion-darwin-x64',
     'linux/arm64': 'centurion-linux-arm64',
     'linux/x64': 'centurion-linux-x64',
+    'win32/arm64': 'centurion-windows-arm64.exe',
     'win32/x64': 'centurion-windows-x64.exe',
   };
   if (!map[key]) throw new Error(`Unsupported platform: ${key}`);
@@ -77,14 +78,13 @@ async function ensure({ quiet = false } = {}) {
   ]);
 
   const line = checksums.split('\n').find((l) => l.trim().endsWith(asset));
-  if (line) {
-    const expected = line.trim().split(/\s+/)[0];
-    const actual = crypto.createHash('sha256').update(bin).digest('hex');
-    if (expected !== actual) {
-      throw new Error(`Checksum mismatch for ${asset} (expected ${expected}, got ${actual})`);
-    }
-  } else if (!quiet) {
-    console.error(`Centurion: warning, no checksum entry for ${asset}, skipping verification.`);
+  if (!line) {
+    throw new Error(`No checksum entry for ${asset}`);
+  }
+  const expected = line.trim().split(/\s+/)[0];
+  const actual = crypto.createHash('sha256').update(bin).digest('hex');
+  if (expected !== actual) {
+    throw new Error(`Checksum mismatch for ${asset} (expected ${expected}, got ${actual})`);
   }
 
   fs.mkdirSync(path.dirname(dest), { recursive: true });

@@ -6,7 +6,8 @@
 $ErrorActionPreference = "Stop"
 
 $repo       = "Thecenturion-co/Centurion-Code"
-$asset      = "centurion-windows-x64.exe"
+$arch       = if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq [System.Runtime.InteropServices.Architecture]::Arm64) { "arm64" } else { "x64" }
+$asset      = "centurion-windows-$arch.exe"
 $installDir = if ($env:CENTURION_INSTALL_DIR) { $env:CENTURION_INSTALL_DIR } else { "$env:LOCALAPPDATA\centurion\bin" }
 
 if ($env:CENTURION_VERSION) {
@@ -17,10 +18,11 @@ if ($env:CENTURION_VERSION) {
 }
 
 $base = "https://github.com/$repo/releases/download/$tag"
-Write-Host "=> Installing Centurion $tag (windows/x64)"
+Write-Host "=> Installing Centurion $tag (windows/$arch)"
 
 New-Item -ItemType Directory -Force -Path $installDir | Out-Null
 $dest = Join-Path $installDir "centurion.exe"
+$alias = Join-Path $installDir "cen.exe"
 $tmp  = Join-Path ([System.IO.Path]::GetTempPath()) $asset
 
 Invoke-WebRequest -Uri "$base/$asset" -OutFile $tmp
@@ -34,6 +36,7 @@ if ($expected -ne $actual) { throw "Checksum mismatch. Refusing to install." }
 Write-Host "=> Checksum verified."
 
 Move-Item -Force $tmp $dest
+Copy-Item -Force $dest $alias
 
 $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
 if ($userPath -notlike "*$installDir*") {
@@ -43,4 +46,5 @@ if ($userPath -notlike "*$installDir*") {
 
 Write-Host ""
 Write-Host "Installed centurion -> $dest" -ForegroundColor Green
+Write-Host "Installed cen       -> $alias" -ForegroundColor Green
 Write-Host "Next: run 'centurion doctor' to check your engine CLIs."

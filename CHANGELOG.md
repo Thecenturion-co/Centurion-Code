@@ -3,6 +3,16 @@
 All notable changes to Centurion Code releases are documented here.
 This file is the source of release notes (`gh release create --notes-file CHANGELOG.md`).
 
+## [1.1.19] - 2026-07-01
+* Binary release matrix expanded and documented for macOS Apple Silicon, macOS Intel,
+  Windows x64, Windows ARM64, Linux x64, and Linux ARM64.
+* Public installers now create both `centurion` and `cen`, verify release checksums,
+  and select the correct Windows architecture.
+* Provider surface now documents OAuth and API-key paths for OpenAI/Codex,
+  Anthropic/Claude, Google Gemini/Antigravity, and xAI/Grok.
+* README refreshed as a binary-distribution front door with the current TUI,
+  advisor/council/swarm workflows, signed-update model, and source boundary.
+
 ## [0.1.1] - 2026-06-27
 * Centurion is now the agent. It owns a THINK, ACT, OBSERVE loop and runs its own jailed tools;
   the vendor CLI is used as a read-only per-turn reasoner (default for the codex engine) instead of

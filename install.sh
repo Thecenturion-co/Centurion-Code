@@ -4,7 +4,7 @@
 #   curl -fsSL https://raw.githubusercontent.com/Thecenturion-co/Centurion-Code/main/install.sh | sh
 #
 # Env overrides:
-#   CENTURION_VERSION=v0.1.0      pin a specific release (default: latest)
+#   CENTURION_VERSION=v1.1.19     pin a specific release (default: latest)
 #   CENTURION_INSTALL_DIR=...     install location (default: $HOME/.local/bin)
 #
 # Copyright The Centurion LLC. Licensed under the Centurion Code EULA.
@@ -70,6 +70,7 @@ info "Checksum verified."
 mkdir -p "$INSTALL_DIR"
 install -m 0755 "${tmp}/${asset}" "${INSTALL_DIR}/${BINARY_NAME}" 2>/dev/null \
   || { cp "${tmp}/${asset}" "${INSTALL_DIR}/${BINARY_NAME}"; chmod 0755 "${INSTALL_DIR}/${BINARY_NAME}"; }
+ln -sf "${INSTALL_DIR}/${BINARY_NAME}" "${INSTALL_DIR}/cen"
 
 # A notarized+stapled macOS binary clears Gatekeeper on its own. Strip the
 # quarantine xattr as a belt-and-suspenders for older macOS / edge cases.
@@ -78,6 +79,7 @@ if [ "$os" = "darwin" ]; then
 fi
 
 printf '\n\033[32mInstalled\033[0m %s -> %s\n' "$BINARY_NAME" "${INSTALL_DIR}/${BINARY_NAME}"
+printf '\033[32mInstalled\033[0m cen -> %s\n' "${INSTALL_DIR}/cen"
 case ":$PATH:" in
   *":$INSTALL_DIR:"*) : ;;
   *) printf '\nAdd this to your shell profile:\n  export PATH="%s:$PATH"\n' "$INSTALL_DIR" ;;

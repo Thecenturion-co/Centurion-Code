@@ -1,9 +1,10 @@
 {
   "name": "@thecenturion/code",
-  "version": "0.0.0",
+  "version": "1.1.19",
   "description": "Centurion Code: the autonomous coding agent that orchestrates the AI CLIs you already pay for. Installs the native binary, no source.",
   "bin": {
-    "centurion": "bin/centurion.js"
+    "centurion": "bin/centurion.js",
+    "cen": "bin/centurion.js"
   },
   "scripts": {
     "postinstall": "node scripts/download.js || true"
