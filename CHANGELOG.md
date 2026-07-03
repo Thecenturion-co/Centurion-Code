@@ -3,6 +3,21 @@
 All notable changes to Centurion Code releases are documented here.
 This file is the source of release notes (`gh release create --notes-file CHANGELOG.md`).
 
+## [1.1.23] - 2026-07-03
+* Native web research: `web_search` and `web_extract` tools find and read live pages inside a run,
+  with truncation, workspace caching, and on-demand paging for token efficiency. The search backend
+  is swappable and defaults to a keyless backend (DuckDuckGo).
+* Command artifacts: `artifact_create` / `artifact_update` / `artifact_list` produce self-contained
+  HTML artifacts under the workspace, listed by `/artifact`. Artifacts use a strict CSP and are
+  written inside a path jail.
+* Grok adapter fixed so `grok` runs as a backing engine again, and `env-sync` no longer copies LLM
+  provider OAuth keys (adds `--purge-llm-keys`).
+* Terminal UI: reliable scrolling, a sticky header, a shells panel (Ctrl-S), interrupt that keeps the
+  drafted message, and an in-TUI run recap.
+* Fixes: restored Anthropic/Claude engine authentication, tightened the verifier and credential
+  handling, honest local-memory reporting, and Codex headless turns no longer trigger desktop
+  notifications.
+
 ## [1.1.19] - 2026-07-01
 * Binary release matrix expanded and documented for macOS Apple Silicon, macOS Intel,
   Windows x64, Windows ARM64, Linux x64, and Linux ARM64.
