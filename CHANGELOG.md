@@ -3,6 +3,18 @@
 All notable changes to Centurion Code releases are documented here.
 This file is the source of release notes (`gh release create --notes-file CHANGELOG.md`).
 
+## [1.1.24] - 2026-07-03
+* Terminal UI now uses the terminal's native scrollback: mouse, trackpad, and PageUp
+  scroll through history and text selection and copy work. The header no longer
+  duplicates or disappears, the banner prints once, and the version, model, and working
+  directory stay pinned in the status line.
+* Reworked the footer navigation: the down-arrow opens a manage panel that reaches
+  Shells, Tasks, Agents, and the command panels (the old `ctrl+s` shortcut is removed).
+* The agent no longer loses track of an earlier request: every turn carries a compact
+  summary of the prior conversation in this session, including on the native provider
+  path. Queued and interrupted (Esc) messages are persisted, so they are not dropped and
+  re-surface on resume.
+
 ## [1.1.23] - 2026-07-03
 * Native web research: `web_search` and `web_extract` tools find and read live pages inside a run,
   with truncation, workspace caching, and on-demand paging for token efficiency. The search backend
