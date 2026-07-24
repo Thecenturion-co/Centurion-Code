@@ -3,6 +3,40 @@
 All notable changes to Centurion Code releases are documented here.
 This file is the source of release notes (`gh release create --notes-file CHANGELOG.md`).
 
+## [1.2.1] - 2026-07-24
+
+A correctness release. Every fix below was found by a cross-model audit of the shipped code,
+confirmed against the source before anything was changed, and is covered by a test.
+
+### Fixed: the verify loop
+
+* The engine is now told which checks it will be judged by. A plain-language goal carries no checks of its own, so Centurion discovered typecheck, test and build while showing the engine nothing, and then graded it on commands it had never seen. Those checks now appear in the prompt, and a repair prompt also names the checks that are already passing and must stay that way.
+* A second goal in the same session no longer inherits the first one's attempts. The attempt counter, failure history and progress streak were shared across every goal in a session, so later goals started part-way through their retry budget, were told to fix the previous request's failures, and eventually gave up instantly without ever starting the engine.
+* Ordinary error text no longer ends a healthy run. Any output containing 401, login, or invalid token was read as lost authentication, so a stack trace line number or a routine syntax error could stop a run that was working fine.
+* Verification commands now receive the environment variables Windows requires, so a check can no longer fail on Windows for reasons unrelated to your code.
+
+### Fixed: commands that did not do what they said
+
+* `/plan` waits for your answer. Previously the approval question was asked after the decision had already been made: without `--bypass` every plan was refused no matter what you typed, and with `--bypass` work started while the question was still on screen.
+* `/resume` is now all-or-nothing. Resuming a session owned by another process used to move your working directory before the switch was refused, leaving you attached to the old session while pointed at the new one's files.
+* `/apply --check` validates a patch without applying it. The flag was advertised in the error message but never read, so following that advice changed your files.
+* `/undo` says plainly that it stashes the entire working tree, not only the last turn, and asks before doing it.
+* `/help <command>` now explains the extension commands it already lists, instead of reporting them as unknown.
+* `/run` documents that it launches a program directly and uses no shell, and warns when shell syntax would be passed through literally.
+* `/diff` shows the actual diff, with `--stat` for the short summary.
+* An unrecognized answer at an approval prompt now says what is accepted and asks again.
+* `/handoff` describes what it really does: it picks the engine your next session starts on.
+
+### Added
+
+* Claude Opus 5 is selectable on the Claude provider.
+
+### Changed
+
+* The em-dash character is gone from the product, its documentation and its terminal output.
+* Repository formatting is normalized, so routine changes stop carrying unrelated reformatting.
+* A timing-sensitive test now measures the algorithm instead of the machine, so a busy CI host no longer reports a false failure.
+
 ## [1.2.0] - 2026-07-24
 
 ### Session and context
