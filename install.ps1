@@ -25,8 +25,8 @@ $dest = Join-Path $installDir "centurion.exe"
 $alias = Join-Path $installDir "cen.exe"
 $tmp  = Join-Path ([System.IO.Path]::GetTempPath()) $asset
 
-Invoke-WebRequest -Uri "$base/$asset" -OutFile $tmp
-$checksums = (Invoke-WebRequest -Uri "$base/checksums.txt").Content
+Invoke-WebRequest -UseBasicParsing -Uri "$base/$asset" -OutFile $tmp
+$checksums = (Invoke-WebRequest -UseBasicParsing -Uri "$base/checksums.txt").Content
 
 $line = ($checksums -split "`n" | Where-Object { $_ -match [regex]::Escape($asset) } | Select-Object -First 1)
 if (-not $line) { throw "No checksum listed for $asset" }
