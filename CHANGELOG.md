@@ -3,6 +3,14 @@
 All notable changes to Centurion Code releases are documented here.
 This file is the source of release notes (`gh release create --notes-file CHANGELOG.md`).
 
+## [1.2.2] - 2026-07-24
+
+### Fixed
+
+* On Windows, updating no longer leaves the `cen` command behind. The installer creates `cen.exe` as a copy of `centurion.exe` rather than a link, and self-update only replaced the file you invoked, so `centurion update` moved `centurion` to the new version while `cen` stayed on the old one indefinitely. Both commands are now refreshed together. If the alias cannot be refreshed the update still succeeds and says which file to fix. macOS and Linux were never affected, because there `cen` is a symlink that follows automatically.
+
+If you are on Windows and already on 1.2.1 or earlier, run `centurion update` once to pick this up. If `cen --version` still disagrees with `centurion --version` afterwards, re-run the installer and both will be correct from then on.
+
 ## [1.2.1] - 2026-07-24
 
 A correctness release. Every fix below was found by a cross-model audit of the shipped code,
