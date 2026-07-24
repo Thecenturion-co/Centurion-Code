@@ -69,7 +69,12 @@ Inside the TUI:
 /providers          inspect provider login/API-key state
 /model              choose the model for the active provider
 /advisor            choose a separate advisor model
-/effort             set low, medium, high, or ultra reasoning effort
+/effort             set the membership tier and view the model's real supported effort
+/compact            summarize a long session
+/todos              inspect the session todo ledger
+/attach             add an image or PDF to a chat turn
+/add-dir            add another directory as read context
+/worktree           enter or leave a worktree
 /goal fix the failing tests
 /swarm refactor the parser and prove the tests
 /stop               interrupt the active turn
@@ -100,12 +105,13 @@ OAuth token files are detected as login evidence, but Centurion does not copy OA
 Centurion is not a thin prompt wrapper. The product boundary stays at Centurion:
 
 - **Operator relationship**: Centurion owns the chat, session transcript, prompt bar, persona, and command surface.
-- **Provider runtime**: Codex, Claude, Gemini/Antigravity, and Grok run headless as backing engines.
+- **Provider runtime**: Centurion rides the selected vendor CLI's native loop by default while retaining its own tools, verification, and cross-provider workflows.
 - **Native tools**: file reads/writes/edits, grep, command execution, GitHub/GitLab repo/review/issue/pipeline/code-search tools.
 - **Goal loop**: think, act, observe, verify, and retry are Centurion states, not provider states.
 - **Verifier gate**: a goal is not done until Centurion-owned checks prove it.
 - **Advisor/council/swarms**: secondary models can review, advise, or race without switching the main provider.
-- **Local memory**: session summaries and operator context live under the user’s local Centurion directory.
+- **Session controls**: `/compact`, `/branch`, `/rewind`, `/cd`, `/add-dir`, and `/worktree` keep long-running work organized.
+- **Local memory**: session summaries and operator context live under the user’s local Centurion directory, with autonomous recall and a recap at session start.
 
 ```text
 operator
@@ -127,9 +133,14 @@ Centurion TUI / commands / session memory
 Binary installs update through a signed release manifest:
 
 ```sh
-centurion update --check
+cen update --check
+cen update
+
+# Equivalent long command
 centurion update
 ```
+
+For a direct binary install, `cen update` or `centurion update` upgrades the running binary in place only after Ed25519 signature verification. npm-wrapper installs defer updates to `npm update -g @thecenturion/code`.
 
 Every release includes:
 
@@ -138,7 +149,7 @@ Every release includes:
 - `manifest.json.sig`,
 - `checksums.txt`.
 
-Centurion verifies the signed manifest, validates the artifact hash, and atomically replaces only the running binary.
+Centurion verifies the Ed25519-signed manifest, validates the artifact hash, and atomically replaces only the running binary.
 
 ## Source And License
 

@@ -3,6 +3,82 @@
 All notable changes to Centurion Code releases are documented here.
 This file is the source of release notes (`gh release create --notes-file CHANGELOG.md`).
 
+## [1.2.0] - 2026-07-24
+
+### Session and context
+* `/compact` now creates real model-backed session summaries, supports steering, and can compact automatically between turns.
+* `/branch` forks a conversation, while `/rewind` lets you move through the session checkpoint timeline.
+* `/cd` changes the session's primary root, `/add-dir` adds extra read contexts, and `/worktree` can enter or leave a worktree, including at launch with `--worktree`.
+
+### Commands and UX
+* `/copy` copies assistant responses, and `/export` produces a human-readable session transcript.
+* `/todos` renders the session todo ledger, backed by native task-list tools.
+* `/attach` adds image and PDF inputs to chat turns.
+* `centurion auth` and `/providers` now share one authentication service, with JSON output available for scripting.
+* `centurion schedule add`, `list`, and `rm` manage stored schedules. This release stores schedules only; the execution daemon is not yet shipped.
+* `--safe-mode` starts Centurion with all customizations disabled.
+* `/focus` switches to an essentials-only view and `/color` sets the session accent.
+* Goal runs now emit outcome notifications with a notify frame, so a finished or failed goal is announced instead of discovered.
+* Usage now detects observed quota markers, catches Grok quota exhaustion even when the CLI exits successfully, and warns at the 80 percent soft cap.
+
+### Agents and orchestration
+* `/fork` starts a parallel read-only subagent and returns its result to the session.
+* The TUI and web surface show a live activity tree for swarm agents.
+* A desktop GUI bridge exposes a global session index, runtime identity, one-shot attach, and remote status for the desktop app.
+* `/btw` asks a disposable side question without adding it to the session context, and can queue or use an alternate engine while a main turn is running.
+
+### Models
+* The model picker was refreshed from live provider probes. Gemini 3.6 Flash is the default runnable Gemini model, replacing the retired Gemini 3.1 Pro Preview option.
+
+### Windows and CI hardening
+* Windows handling is more portable across provider executable resolution, repository-relative guard paths, verifier grep proof paths, and session publication retries.
+* CI now runs the real verify gate in merge requests and includes a native Windows verification lane.
+
+### Memory
+* Centurion now performs autonomous recall and presents a recap when a session starts.
+* A `/btw` digest can seed session memory after a disposable side question.
+
+## [1.1.27] - 2026-07-05
+* Claude chat turns reuse a native warm session through `--resume`, so follow-ups send only fresh context. Centurion owns and cleans up its session files without disturbing Keychain authentication.
+* The footer ledger now shows metered tokens, cache reads separately, cost, and context-window pressure, and restores this information when a session resumes.
+* Centurion identity now lives in the system layer, so a riding Claude turn answers as Centurion without reaching into `~/.claude`.
+* Casual turns use a lite path with tools off instead of starting the full agentic loop and resending the full preamble.
+* The TUI shows each model's real supported effort level rather than treating the membership tier as its effort setting.
+* The active thinking bar now has a premium metallic shimmer and ultra-purple treatment, with a clean non-truecolor and non-TTY fallback. Set `CENTURION_NO_ANIMATION=1` to freeze it.
+* `CENTURION_OBSERVABILITY=1` enables structured hot-path instrumentation without logging prompts, paths, or IO, and has near-zero cost when disabled.
+* Coding now rides the vendor CLI's own warm loop by default. The native oracle remains available for verification, jailed tools, and cross-provider work.
+
+## [1.1.26] - 2026-07-04
+* Token counting is now accurate and live on every path, including a plain chat message that runs
+  the provider's own agentic loop. Real Claude turns stamp usage on each streamed step (nested under
+  the message), which the counter now reads, so the number climbs during the turn and settles on the
+  true total instead of freezing at a tiny estimate. A short read-two-files turn now reports tens of
+  thousands of tokens (what it actually cost) rather than a handful.
+* A tighter native loop. In a goal run the agent may now batch several independent read-only lookups
+  (for example reading many known files) into one step instead of one round trip per file, which cuts
+  wasted turns and tokens on read-heavy work. The batch is capped and only used for independent reads;
+  anything that depends on a prior result, or that writes, still runs one step at a time.
+* Autonomous memory tools. The agent can now search, read, and append its own local Centurion memory
+  during a run (memory_search, memory_read, memory_write). Writes are appended only, jailed to the
+  Centurion memory files, and secret-redacted; reads are redacted too so a stored secret is never
+  echoed back. An activity summary line reflects what the turn did (read, searched, wrote memory).
+* The loop-stall guard no longer falsely kills a run that legitimately re-reads the same context file
+  each step; it still stops a genuine repeat of the same batch.
+
+## [1.1.25] - 2026-07-03
+* Redesigned the status line to be point-driven: the permission mode sits on the far left and a
+  single manage affordance sits on the far right, showing the live shell count and highlighting when
+  shells are running. The version, model, and working directory are no longer duplicated on the
+  footer (they stay in the banner), and the down-arrow opens a navigable manage panel that descends
+  into Shells, Tasks, Agents, and the command panels.
+* Accurate token accounting. The native provider path now reports real input, output, and cache
+  tokens, and a live usage signal updates the counter during a turn instead of only at the end, so
+  the working indicator reflects true token expenditure rather than a tiny estimate.
+* More reliable long turns. The per-step timeout is now an inactivity timeout with a generous
+  absolute ceiling: a turn that keeps producing output is never killed mid-flight, while a genuinely
+  stalled turn still stops with a clear reason. This fixes healthy turns on large prompts being
+  cut off prematurely.
+
 ## [1.1.24] - 2026-07-03
 * Terminal UI now uses the terminal's native scrollback: mouse, trackpad, and PageUp
   scroll through history and text selection and copy work. The header no longer

@@ -4,7 +4,7 @@
 #   curl -fsSL https://raw.githubusercontent.com/Thecenturion-co/Centurion-Code/main/install.sh | sh
 #
 # Env overrides:
-#   CENTURION_VERSION=v1.1.19     pin a specific release (default: latest)
+#   CENTURION_VERSION=v1.2.0      pin a specific release (default: latest)
 #   CENTURION_INSTALL_DIR=...     install location (default: $HOME/.local/bin)
 #
 # Copyright The Centurion LLC. Licensed under the Centurion Code EULA.
