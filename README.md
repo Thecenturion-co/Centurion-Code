@@ -32,6 +32,16 @@ irm https://raw.githubusercontent.com/Thecenturion-co/Centurion-Code/main/instal
 
 The installer creates both `centurion` and `cen`.
 
+### npm
+
+If you already live in the Node ecosystem, or you are installing into a CI image:
+
+```sh
+npm i -g @thecenturion/code
+```
+
+This installs the native binary for your platform only, not all six, and gives you both `centurion` and `cen`. The download's SHA-256 is verified at install and again before the binary runs, so a truncated or tampered download is refused rather than executed. If npm skips the platform package, the error tells you which package was expected and prints the one-line installer above as a fallback.
+
 ### Direct Downloads
 
 | Platform            | Asset                         |

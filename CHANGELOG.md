@@ -3,6 +3,43 @@
 All notable changes to Centurion Code releases are documented here.
 This file is the source of release notes (`gh release create --notes-file CHANGELOG.md`).
 
+## [1.2.3] - 2026-07-25
+
+Install with npm, and a loop that stops giving up early.
+
+### Added
+
+* **`npm i -g @thecenturion/code`.** Until now the only ways in were a curl script or a manual binary download. The npm package pulls exactly one native binary for your platform rather than all six, and both `centurion` and `cen` work immediately.
+
+  npm treats a failed optional dependency as a *successful* install, which is how a wrapper ends up reporting success while the command is missing or truncated. So both failure paths are explicit here. Every platform package records its binary's SHA-256, and it is checked once at install and again before the binary runs: a truncated or tampered download is refused rather than executed. If the platform package is missing entirely, the error names the package, explains why npm let the install pass, and prints the curl command that will work.
+
+### Fixed
+
+* **A repeated failure now gets the retry the policy promises.** The loop documents "same failure twice, resume the engine, then escalate to a human". That decision was being read *after* an anti-livelock guard had already ended the run, so neither the resume nor the escalation ever happened. A goal whose typecheck failed the same way twice, which is what happens whenever the first repair does not touch the failing file, stopped on attempt 2 of 6 with two thirds of its budget unspent.
+
+* **Progress inside a single failing check is no longer read as no progress.** A run taking one test file from 40 failures to 5 to 1 changed the same file every time and never flipped a check from red to green, so it scored as "no measurable progress" and was stopped, while the error was demonstrably different on every attempt.
+
+* **A declared check is now protected from tampering, the same as a discovered one.** Pinning your proof surface in `CENTURION.md` is the documented, recommended way to do it, and it was the one path where the protection did not apply. An engine could rewrite its own `test` script to `echo ok`, the verifier would run the rewritten script, and the run would be reported as proven. In a workspace with several packages the snapshot now follows the check's own directory rather than the repository root.
+
+* **A goal whose only writes were ignored by git is no longer closed as "workspace unchanged".** Regenerating a `dist/` folder looked to the loop like a run that changed nothing, and it was closed with a passing report on a workspace it had actually modified.
+
+* **A resumed run no longer points the engine at the wrong check.** After a crash, the repair prompt reconstructed which checks had failed from the counts alone, so a run where only `typecheck` failed told the engine to fix the `build`, with the TypeScript error attached to it. A resumed run also gets the same retry budget as one that never crashed.
+
+* **Stopping a turn now stops everything it started.** Cancelling a turn signalled only the vendor CLI, so the tool subprocesses and MCP servers it had launched kept running in the background for the life of the machine. They are now stopped as a group, and the stop escalates so a process that ignores the first signal cannot hang the turn instead.
+
+* **A long session no longer gets slower the longer it runs.** Every turn re-read the entire history of the session, so cost grew with age. Turns now read only what that turn produced.
+
+* **The credential store for the default engine is cleaned up, and no longer disappears mid-session.** It was never collected, so a directory accumulated per session, and a session left open for more than three days could have its store deleted underneath it, after which the engine reported "not logged in" and the run ended.
+
+### Changed
+
+* Code formatting is now part of the verify gate, so drift is caught in your working tree rather than in review.
+* `centurion init` no longer pins a new project to a superseded model.
+
+### Security
+
+* When an MCP server is configured with a credential, the CLI now tells you that the value travels on the vendor's command line where any local process listing can read it. The alternative the code claimed to offer does not exist: the vendor gives its MCP servers a minimal environment that does not include the parent's, verified directly. Moving these values into the per-session config file is tracked as follow-up work.
+
 ## [1.2.2] - 2026-07-24
 
 ### Fixed
