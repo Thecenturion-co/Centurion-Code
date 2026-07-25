@@ -8,7 +8,7 @@ Every other agent stops when the model stops asking for tools. Centurion stops w
 
 ![Centurion Code TUI](./docs/assets/centurion-code-tui.png)
 
-[Install](#install) · [How it works](#how-it-works) · [Commands](#commands) · [Providers](#providers) · [Updates](#updates-and-integrity)
+[Install](#install) · [How it works](./docs/HOW-IT-WORKS.md) · [Configuration](./docs/CONFIGURATION.md) · [Commands](#commands) · [Providers](#providers)
 
 </div>
 
@@ -162,6 +162,13 @@ Every release carries `manifest.json`, an Ed25519 `manifest.json.sig`, and `chec
 replacing anything, Centurion verifies that signature against a public key compiled into the binary,
 checks the artifact hash and size, refuses a downgrade, and swaps the file atomically. A release host
 that got compromised still could not push you a forgery.
+
+## Documentation
+
+- [How it works](./docs/HOW-IT-WORKS.md): the loop, the failure signature, the ledger, isolation, and
+  how updates are signed.
+- [Configuration](./docs/CONFIGURATION.md): every setting, where state is stored, and how to pin the
+  checks a goal is judged against.
 
 ## Source and license
 
