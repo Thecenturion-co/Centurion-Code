@@ -5,13 +5,20 @@ This file is the source of release notes (`gh release create --notes-file CHANGE
 
 ## [1.2.3] - 2026-07-25
 
-Install with npm, and a loop that stops giving up early.
+A loop that stops giving up early, and an npm channel built ready to publish.
 
 ### Added
 
-* **`npm i -g @thecenturion/code`.** Until now the only ways in were a curl script or a manual binary download. The npm package pulls exactly one native binary for your platform rather than all six, and both `centurion` and `cen` work immediately.
+* **An npm install channel is now built into every release.** A meta package pulls exactly one native
+  binary for your platform rather than all six, and both `centurion` and `cen` work immediately. Each
+  platform package records its binary's SHA-256, checked once at install and again before the binary
+  runs, so a truncated or tampered download is refused rather than executed. If npm skips the platform
+  package, which it does silently for optional dependencies, the error names the package and prints
+  the installer command that will work.
 
-  npm treats a failed optional dependency as a *successful* install, which is how a wrapper ends up reporting success while the command is missing or truncated. So both failure paths are explicit here. Every platform package records its binary's SHA-256, and it is checked once at install and again before the binary runs: a truncated or tampered download is refused rather than executed. If the platform package is missing entirely, the error names the package, explains why npm let the install pass, and prints the curl command that will work.
+  The packages are built and verified as part of the release, but are not on the public npm registry
+  yet. Until they are, use the installers above. This entry will name the exact command once it is
+  live.
 
 ### Fixed
 
