@@ -2,179 +2,199 @@
 
 # Centurion Code
 
-**The coding agent that has to prove it finished.**
+### The autonomous coding workspace that has to prove it finished.
 
-Every other agent stops when the model stops asking for tools. Centurion stops when your tests pass.
+[![Latest release](https://img.shields.io/github/v/release/Thecenturion-co/Centurion-Code?display_name=tag&style=flat-square&color=8f8f8f)](https://github.com/Thecenturion-co/Centurion-Code/releases/latest)
+[![Platforms](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-b7b7b7?style=flat-square)](#install)
+[![Signed updates](https://img.shields.io/badge/updates-Ed25519%20verified-72ad78?style=flat-square)](#updates-and-integrity)
 
-![Centurion Code TUI](./docs/assets/centurion-code-tui.png)
+One terminal. OpenAI, Anthropic, xAI, and Google underneath it. A verification
+loop above them that does not call the work done until your real checks pass.
 
-[Install](#install) · [How it works](./docs/HOW-IT-WORKS.md) · [Configuration](./docs/CONFIGURATION.md) · [Commands](#commands) · [Providers](#providers)
+![Centurion Code 1.2.15 terminal workspace](./docs/assets/centurion-code-tui.png)
+
+[Install](#install) · [Capabilities](#what-centurion-code-does) · [How it works](./docs/HOW-IT-WORKS.md) · [Configuration](./docs/CONFIGURATION.md) · [Latest release](https://github.com/Thecenturion-co/Centurion-Code/releases/latest)
 
 </div>
 
 ---
 
-## The idea
-
-Point Centurion at a goal. It drives the AI CLI you already pay for, then runs your real checks as
-real subprocesses: `typecheck`, `lint`, `test`, whatever your project actually uses.
-
-If a check fails, Centurion reads the failure, classifies it, and sends the engine back in with the
-evidence. It keeps a per-attempt ledger, so it knows whether the last turn made things better or just
-moved them around. It says DONE only when every required check exits `0`.
-
-```
-THINK ──▶ ACT ──▶ OBSERVE ──▶ VERIFY ──▶ DONE
-   ▲                             │        (every required check exited 0)
-   └── REPAIR / RESUME_ENGINE ◀──┘
-                                 └──────▶ ESCALATE / GIVE_UP  (budget spent)
-```
-
-The engine cannot fake this. The command behind each check is snapshotted before the engine gets its
-first turn, so a model that rewrites `"test": "echo ok"` mid-run fails with a tampering error instead
-of a green tick.
-
 ## Install
 
-Centurion ships as a signed, standalone binary. You do not need Node, pnpm, or Bun to run it.
+Centurion Code ships as one standalone binary. Node, pnpm, Bun, and a source
+checkout are not required.
 
-**macOS and Linux**
+### macOS and Linux
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/Thecenturion-co/Centurion-Code/main/install.sh | sh
 ```
 
-**Windows PowerShell**
+### Windows PowerShell
 
 ```powershell
 irm https://raw.githubusercontent.com/Thecenturion-co/Centurion-Code/main/install.ps1 | iex
 ```
 
-Both installers give you `centurion` and the short alias `cen`.
-
-**Direct download**
-
-| Platform            | Asset                         |
-| ------------------- | ----------------------------- |
-| macOS Apple Silicon | `centurion-darwin-arm64`      |
-| macOS Intel         | `centurion-darwin-x64`        |
-| Linux x64           | `centurion-linux-x64`         |
-| Linux ARM64         | `centurion-linux-arm64`       |
-| Windows x64         | `centurion-windows-x64.exe`   |
-| Windows ARM64       | `centurion-windows-arm64.exe` |
-
-From the [latest release](https://github.com/Thecenturion-co/Centurion-Code/releases/latest). macOS
-binaries are signed with a Developer ID and notarized by Apple.
-
-## First run
-
-```sh
-centurion doctor      # what is installed, logged in, and reachable
-centurion providers   # which engines you can actually use
-centurion             # start the TUI
-```
-
-Then give it something to prove:
-
-```sh
-centurion goal "fix the failing tests"
-```
-
-## How it works
-
-Centurion is not a prompt wrapper. It owns the operator loop and treats the vendor CLI as a
-replaceable engine underneath it.
-
-```
-operator
-   │
-   ▼
-Centurion  ── session transcript, memory, command surface
-   │
-   ├── native tools ......... files, grep, shell, GitHub, GitLab
-   ├── verifier ............. your real checks, as real processes
-   ├── advisor .............. an optional second model reviewing the first
-   ├── council .............. read-only cross-model review
-   └── engine ............... Codex │ Claude │ Gemini │ Grok
-                                 │
-                                 ▼
-                              model turn
-```
-
-What that buys you, concretely:
-
-- **A goal that ends in proof**, not in "the model seemed satisfied".
-- **Evidence you can read.** Every attempt appends to a ledger: what changed, which checks ran, what
-  failed, and whether it counted as progress. A crashed run resumes from that ledger instead of
-  starting over.
-- **More than one model on one problem.** `/swarm` races engines in separate git worktrees.
-  `/consult` gets a second opinion without switching your main engine.
-- **Isolation when you want it.** Run a goal inside a git worktree so a bad turn cannot touch your
-  working tree.
-- **Your existing subscriptions.** It rides the vendor CLIs you are already logged into over OAuth,
-  so there is no second bill.
-
-## Commands
-
-Inside the TUI, `/help` lists everything. The ones worth knowing first:
+The installers detect the operating system and CPU, download the matching
+release asset, verify its SHA-256, and install both command names:
 
 ```text
-/goal <prompt>        run to proven completion
-/swarm <task>         race several engines on the same task
-/verify               run the checks right now
-/status               loop state, active goal, verifier status
-/diff [--stat]        what changed
-/consult              ask other models about the current state
-/review               have the engine review its own diff
-/model, /effort       choose the model and how hard it thinks
-/compact              summarize a long session to reclaim context
-/rewind               restore a code and conversation checkpoint
-/worktree             enter or leave an isolated worktree
-/stop                 halt the running turn
+centurion    full command
+cen          short alias
 ```
 
-From your shell: `centurion goal`, `doctor`, `providers`, `connect`, `sessions`, `transcript`,
-`schedule`, `env-sync`, `update`.
+Then inspect the machine and open the terminal workspace:
+
+```sh
+centurion doctor
+centurion providers
+centurion
+```
+
+<details>
+<summary>Direct binary downloads</summary>
+
+| Platform             | Release asset                 |
+| -------------------- | ----------------------------- |
+| macOS, Apple Silicon | `centurion-darwin-arm64`      |
+| macOS, Intel         | `centurion-darwin-x64`        |
+| Linux, x64           | `centurion-linux-x64`         |
+| Linux, ARM64         | `centurion-linux-arm64`       |
+| Windows, x64         | `centurion-windows-x64.exe`   |
+| Windows, ARM64       | `centurion-windows-arm64.exe` |
+
+Download them from the [latest release](https://github.com/Thecenturion-co/Centurion-Code/releases/latest).
+
+</details>
+
+## What Centurion Code does
+
+| Surface                       | What it gives you                                                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Proven goals**              | Runs the project's real typecheck, lint, test, and build commands. `DONE` requires every required check to exit `0`.                             |
+| **One multi-model workspace** | Uses your authenticated Codex, Claude, Grok, and Gemini CLIs. Switch provider, model, and supported effort without leaving the session.          |
+| **Advisor and council**       | Ask a connected second model to critique the active model, or collect read-only cross-model review before accepting a result.                    |
+| **Parallel agents**           | Launch isolated workers, watch their live status and responses in the Agents panel, and reply into resumable worker threads.                     |
+| **Durable sessions**          | Resume after a crash with the transcript, attempt ledger, task state, model identity, and verification evidence intact.                          |
+| **Background work**           | Detach supported sessions into the local supervisor, inspect their logs, reattach, or stop the complete process tree.                            |
+| **Native tools**              | Read, search, edit, patch, run commands, monitor jobs, inspect Git, and work with GitHub or GitLab through the controlled tool surface.          |
+| **Operator controls**         | Explicit permission modes, allow/ask/deny rules, isolated worktrees, checkpoints, rewind, usage caps, and optional macOS workspace sandboxing.   |
+| **Memory and context**        | Search and edit project or user memory, compact long sessions, ask disposable side questions, and keep recurring facts without duplicating them. |
+| **Desktop handoff**           | A shared session/event protocol lets the Centurion desktop and remote-control surfaces mirror the terminal's real state.                         |
+
+## The proof loop
+
+Centurion treats the model's “finished” message as a claim, not a conclusion.
+
+```text
+ GOAL
+   │
+   ▼
+ THINK ──▶ ACT ──▶ OBSERVE ──▶ VERIFY ───────────────▶ DONE
+   ▲                             │                 every required
+   │                             │                 check exited 0
+   └──── REPAIR / RESUME ◀───────┘
+                                 └──▶ ESCALATE when the budget is spent
+```
+
+The command behind each required check is snapshotted before the model gets its
+first turn. Rewriting `"test"` to `"echo ok"` cannot manufacture a green result;
+the verifier detects the changed proof surface and refuses it.
+
+Every attempt records what changed, which checks ran, the failure signature,
+and whether the run made measurable progress. A resumed goal continues from
+that evidence instead of beginning again with an empty prompt.
+
+[Read the complete loop and trust model →](./docs/HOW-IT-WORKS.md)
+
+## Terminal workspace
+
+The 1.2.15 interface is a responsive, centered terminal workspace with one
+consistent steel-and-ink table system. Keyboard navigation reaches the command
+picker and the working panels without turning slash commands into chat turns.
+
+```text
+Shells   running commands and captured output
+Tasks    the live, durable goal ledger
+Agents   active workers, model identity, status, and replies
+Docs     project documentation discovered for the session
+```
+
+The same visual system is used for providers, models, effort, configuration,
+resume, advisor selection, approvals, and command help. Narrow terminals
+compact the header and tables instead of breaking their alignment.
+
+## Start with these commands
+
+```text
+/goal <prompt>        run a goal to verified completion
+/providers            inspect connected providers and select the active one
+/model                choose a model supported by that provider
+/effort               choose an effort supported by that model
+/advisor              select a connected second model for critique
+/swarm <task>         run isolated parallel workers
+/verify               run the proof checks now
+/status               inspect the loop, goal, and verifier state
+/config               change actionable settings
+/resume               continue a durable session
+/compact              reclaim context with a durable summary
+/rewind               restore a code and conversation checkpoint
+/worktree             enter or leave an isolated Git worktree
+/help                 browse the canonical command catalog
+```
+
+From a shell, use `centurion goal`, `doctor`, `providers`, `connect`,
+`sessions`, `agents`, `logs`, `stop`, `schedule`, `env-sync`, and `update`.
 
 ## Providers
 
-At least one engine must be available. Centurion detects logins you already have.
+Centurion uses provider authentication already present on the machine. At least
+one connected engine is required.
 
-| Provider           | OAuth                                                       | API key                              |
-| ------------------ | ----------------------------------------------------------- | ------------------------------------ |
-| OpenAI / Codex     | `centurion connect codex` or an existing `codex` login      | `OPENAI_API_KEY` or `CODEX_API_KEY`  |
-| Anthropic / Claude | `centurion connect claude` or an existing Claude Code login | `ANTHROPIC_API_KEY`                  |
-| Google / Gemini    | `centurion connect gemini` or an existing Gemini login      | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
-| xAI / Grok         | `centurion connect grok` or an existing Grok CLI login      | `XAI_API_KEY` or `GROK_API_KEY`      |
+| Provider           | Existing login                            | API-key alternative                  |
+| ------------------ | ----------------------------------------- | ------------------------------------ |
+| OpenAI / Codex     | `codex` or `centurion connect codex`      | `OPENAI_API_KEY` or `CODEX_API_KEY`  |
+| Anthropic / Claude | Claude Code or `centurion connect claude` | `ANTHROPIC_API_KEY`                  |
+| xAI / Grok         | Grok CLI or `centurion connect grok`      | `XAI_API_KEY` or `GROK_API_KEY`      |
+| Google / Gemini    | Gemini CLI or `centurion connect gemini`  | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
 
-Centurion never copies OAuth token files. It reads them only as evidence that you are logged in.
-API-key values are imported only when you ask, with `centurion env-sync apply`, and secret values are
-never printed.
+OAuth credential files are not copied. API keys are imported only when you ask
+with `centurion env-sync apply`, and secret values are never printed.
 
 ## Updates and integrity
 
 ```sh
-cen update --check
-cen update
+cen update --check    # query the signed latest-release channel now
+cen update            # verify, install atomically, and refresh both aliases
 ```
 
-Every release carries `manifest.json`, an Ed25519 `manifest.json.sig`, and `checksums.txt`. Before
-replacing anything, Centurion verifies that signature against a public key compiled into the binary,
-checks the artifact hash and size, refuses a downgrade, and swaps the file atomically. A release host
-that got compromised still could not push you a forgery.
+Centurion also checks the latest-release channel in the background at most once
+every 24 hours and shows an update notice when a newer version is available.
+It does not install an update without your command.
+
+Every release contains six platform binaries, `checksums.txt`,
+`manifest.json`, and an Ed25519 `manifest.json.sig`. Before replacement,
+Centurion verifies the manifest against the public key compiled into the
+binary, then checks the selected asset's URL, size, and SHA-256. It refuses a
+downgrade and swaps the executable atomically. On Windows it refreshes both
+`centurion.exe` and `cen.exe`.
 
 ## Documentation
 
-- [How it works](./docs/HOW-IT-WORKS.md): the loop, the failure signature, the ledger, isolation, and
-  how updates are signed.
-- [Configuration](./docs/CONFIGURATION.md): every setting, where state is stored, and how to pin the
-  checks a goal is judged against.
+- [How it works](./docs/HOW-IT-WORKS.md) — proof, retry policy, ledgers,
+  multi-model review, isolation, background sessions, and signed updates.
+- [Configuration](./docs/CONFIGURATION.md) — state locations, provider/model
+  settings, permissions, memory, compaction, and proof checks.
+- [Security policy](./SECURITY.md) — report a vulnerability privately.
 
-## Source and license
+## Public repository boundary
 
-Centurion Code is proprietary software distributed as compiled binaries. This repository is the
-public front door: installers, release metadata, and documentation. The production source is not
-published here.
+This repository is the public download and documentation front door for
+Centurion Code. It intentionally contains installers, release metadata, public
+documentation, and privacy-safe product imagery—not the proprietary production
+source. GitLab remains the private source of truth, and a guarded release job
+publishes the exact signed binary bundle here.
 
 [EULA](./EULA.md) · [Security policy](./SECURITY.md) · [Third-party notices](./THIRD_PARTY_NOTICES.md)
 
