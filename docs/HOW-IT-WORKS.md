@@ -66,9 +66,34 @@ starting from zero, and the repair prompt it builds names the checks that actual
 - **`/consult`** asks other engines about the current state without changing yours.
 - **`/swarm`** races several engines on the same task, each in its own git worktree, and keeps the
   one that proves itself.
-- **`advisor`** is a standing second model that reviews the first.
+- **`/advisor`** selects a connected second model that reviews the first. Provider/model pairs are
+  validated before a request can start.
+- **`/council`** gathers a read-only cross-model review when one opinion is not enough.
 
 These are read-only unless you ask otherwise. The engine you chose stays the engine that writes.
+
+The TUI's Agents panel shows every live worker, the provider and model that actually ran, its status,
+and the response stream. Resumable worker handles let a later message continue the same engine
+thread instead of silently starting a new one.
+
+## Background sessions and jobs
+
+Long-running command tools are durable jobs. `job_list`, `job_output`, and `job_kill` address the
+same registry shown by `/bashes`, and a timed-out command can keep running without becoming an
+unowned process.
+
+The optional local supervisor extends that ownership beyond one terminal:
+
+```sh
+centurion daemon start
+centurion agents
+centurion logs --follow <id>
+centurion agents attach <id>
+centurion stop <id>
+```
+
+The supervisor records process identity, keeps byte-capped logs, and stops the complete process
+tree. When liveness cannot be proven it reports `unknown`; it never guesses that a process stopped.
 
 ## Isolation
 
@@ -77,6 +102,12 @@ your working tree. `/rewind` restores a checkpoint of both the code and the conv
 
 Each session also gets its own provider state directory, so two sessions using the same vendor CLI
 cannot tread on each other's credentials or history.
+
+Native file and command tools run through Centurion's permission surface. Allow, ask, and deny rules
+are matched to both the tool and its argument; deny always wins. On macOS, a project can additionally
+put native commands in a `sandbox-exec` workspace-write profile that denies network unless the
+project explicitly enables it. A sandbox that cannot be applied fails closed instead of quietly
+running unsandboxed.
 
 ## Updates
 

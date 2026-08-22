@@ -1,0 +1,42 @@
+name: Verify public front door
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docs-and-installers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Validate metadata and public links
+        run: |
+          node -e "const p=require('./package.json'); if(p.version!=='1.2.15'||p.private!==true) process.exit(1)"
+          test -f docs/assets/centurion-code-tui.png
+          grep -q 'releases/latest' README.md
+          grep -q 'releases/latest' install.sh
+          grep -q 'releases/latest' install.ps1
+      - name: Refuse private machine paths
+        run: |
+          if grep -R -E '/Users/[^<]|C:\\Users\\[^<]' -- README.md CHANGELOG.md docs; then
+            echo 'Private machine path found in the public front door.'
+            exit 1
+          fi
+      - name: Parse POSIX installer
+        run: sh -n install.sh
+
+  powershell-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse PowerShell installer
+        shell: pwsh
+        run: |
+          $null = [scriptblock]::Create((Get-Content -Raw ./install.ps1))
