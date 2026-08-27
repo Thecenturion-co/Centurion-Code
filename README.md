@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./docs/assets/centurion-avatar.png" alt="Pixel-art centurion helmet" width="200">
+
 # Centurion Code
 
 ### The autonomous coding workspace that has to prove it finished.
@@ -10,8 +12,6 @@
 
 One terminal. OpenAI, Anthropic, xAI, and Google underneath it. A verification
 loop above them that does not call the work done until your real checks pass.
-
-![Centurion Code 1.2.15 terminal workspace](./docs/assets/centurion-code-tui.png)
 
 [Install](#install) · [Capabilities](#what-centurion-code-does) · [How it works](./docs/HOW-IT-WORKS.md) · [Configuration](./docs/CONFIGURATION.md) · [Latest release](https://github.com/Thecenturion-co/Centurion-Code/releases/latest)
 
@@ -74,7 +74,7 @@ Download them from the [latest release](https://github.com/Thecenturion-co/Centu
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Proven goals**              | Runs the project's real typecheck, lint, test, and build commands. `DONE` requires every required check to exit `0`.                             |
 | **One multi-model workspace** | Uses your authenticated Codex, Claude, Grok, and Gemini CLIs. Switch provider, model, and supported effort without leaving the session.          |
-| **Advisor and council**       | Ask a connected second model to critique the active model, or collect read-only cross-model review before accepting a result.                    |
+| **Advisor and council**       | Ask connected models to critique the active model, answer a question in parallel, or collect read-only cross-model review before accepting a result. |
 | **Parallel agents**           | Launch isolated workers, watch their live status and responses in the Agents panel, and reply into resumable worker threads.                     |
 | **Durable sessions**          | Resume after a crash with the transcript, attempt ledger, task state, model identity, and verification evidence intact.                          |
 | **Background work**           | Detach supported sessions into the local supervisor, inspect their logs, reattach, or stop the complete process tree.                            |
@@ -110,9 +110,11 @@ that evidence instead of beginning again with an empty prompt.
 
 ## Terminal workspace
 
-The 1.2.15 interface is a responsive, centered terminal workspace with one
+The 1.2.16 interface is a responsive, centered terminal workspace with one
 consistent steel-and-ink table system. Keyboard navigation reaches the command
 picker and the working panels without turning slash commands into chat turns.
+
+![Centurion Code 1.2.16 terminal workspace](./docs/assets/centurion-code-tui.png)
 
 ```text
 Shells   running commands and captured output
@@ -192,7 +194,7 @@ downgrade and swaps the executable atomically. On Windows it refreshes both
 
 This repository is the public download and documentation front door for
 Centurion Code. It intentionally contains installers, release metadata, public
-documentation, and privacy-safe product imagery—not the proprietary production
+documentation, and privacy-safe product imagery, not the proprietary production
 source. GitLab remains the private source of truth, and a guarded release job
 publishes the exact signed binary bundle here.
 

@@ -1,6 +1,6 @@
 {
   "name": "centurion-code-frontdoor",
-  "version": "1.2.15",
+  "version": "1.2.16",
   "description": "Public front door for Centurion Code: installers, release metadata, and documentation. Not the published npm package.",
   "license": "SEE LICENSE IN EULA.md",
   "homepage": "https://thecenturion.co",

@@ -18,7 +18,7 @@ jobs:
           node-version: 24
       - name: Validate metadata and public links
         run: |
-          node -e "const p=require('./package.json'); if(p.version!=='1.2.15'||p.private!==true) process.exit(1)"
+          node -e "const p=require('./package.json'); if(p.version!=='1.2.16'||p.private!==true) process.exit(1)"
           test -f docs/assets/centurion-code-tui.png
           grep -q 'releases/latest' README.md
           grep -q 'releases/latest' install.sh

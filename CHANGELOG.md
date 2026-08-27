@@ -4,6 +4,52 @@ All notable changes to Centurion Code releases are documented here.
 The private source changelog is the release-note authority. This public copy keeps the downloadable
 product history readable without publishing the production source tree.
 
+## [1.2.16] - 2026-08-27
+
+The reliability and collaboration release.
+
+### Added
+
+- Clipboard image paste now follows the same attachment flow as `/attach`, with terminal drag-and-drop
+  and `/learn` keeping local paths out of provider prompts. Unsupported terminals receive a direct
+  `/attach <path>` fallback. Attachment reads that cannot be inlined now produce an unreadable marker
+  instead of failing the turn.
+- `/advisor <question>` can query connected models in parallel, show which model answered, and make
+  disagreement visible. `/advisor off` and `/advisor reset` now also clear the saved advisor selection.
+- `/consult` now uses a provider-aware default synthesizer, gives each provider an appropriate time
+  budget, and shows when a response was cut off instead of counting it as a silent vote.
+- Running sessions can exchange messages with another coding agent through
+  `centurion peer register|list|send|inbox`. The exchange is bounded and clearly attributed, and peer
+  input stays separate from operator input and durable memory.
+- A model can launch bounded, isolated workers during a turn. Shells and Agents panels now record
+  work from the actual launch site, and failed worker cleanup is reported.
+
+### Changed
+
+- Token and context reporting now separates usage from cache occupancy. Token displays count input and
+  output, context pressure remains cache-inclusive, and the active line shows current-turn reasoning
+  and effort, using provider-reported reasoning counts when available.
+- Scheduled `/loop` runs now check their context budget at every iteration, compact when possible, and
+  deliver escalating low-context alerts when compaction is disabled or cannot keep up. Cancellation is
+  rechecked before another turn is sent.
+- The terminal, desktop, and mobile surfaces now agree on turn outcomes: an intentional interruption is
+  shown as an interruption, a timeout remains a failure, and commands settle once with the handler's
+  actual result. Casual chat also follows the available tool-mode fallback instead of aborting.
+- Help output and the headless entry point now use the same command catalog as the TUI. Tool activity
+  includes every tool, and the Docs panel lists artifacts the session actually produced.
+- Provider discovery and selection are more honest about authentication, partial model listings,
+  retired model pins, and quota failures, so unavailable or incomplete provider state is not presented
+  as ready to use. Failed tool calls now surface as failures rather than hanging.
+
+### Fixed
+
+- Timeouts and cancellation now clean up entire process trees, including Windows probe trees and command
+  descendants, while background work keeps a durable record when teardown is not yet proven.
+- Memory and local-state recovery now handles unsafe symlinks, custom homes, root directories, and
+  cancellation without escaping the configured boundary or turning cleanup into an unhandled failure.
+- Cross-engine conformance and reliability coverage now exercises cancellation, timeouts, usage
+  reporting, wait budgets, process identity, and cleanup paths consistently.
+
 ## [1.2.15] - 2026-08-21
 
 The operator-surface release.
