@@ -5,61 +5,62 @@
 Centurion treats the engine's "I am finished" as a claim, not a conclusion.
 
 ```
-                ┌──────────────────────────────────────────────┐
-                │  a goal, from a prompt or goal.yaml          │
-                │  checks: from the goal, then CENTURION.md,   │
-                │  then discovered from your package manifest  │
-                └───────────────────┬──────────────────────────┘
-                                    │  the command behind each check is
-                                    │  snapshotted HERE, before the engine
-                                    │  gets a turn
-                                    ▼
-  ┌──────▶ THINK ──▶ ACT ──▶ OBSERVE ──▶ VERIFY ─────────┬──▶ DONE
-  │          ▲                             │             │   every required
-  │          │                             ▼             │   check exited 0
-  │          │                    ┌────────────────┐     │
-  │          │                    │ classify the   │     │
-  │          │                    │ failure, hash  │     │
-  │          │                    │ its signature  │     │
-  │          │                    └───────┬────────┘     │
-  │          │        ┌───────────────────┴───────────┐  │
-  │          │        ▼                               ▼  │
-  │          │   signature moved?                same signature
-  │          │   that is progress                1st repeat   2nd repeat
-  │          │        │                               │          │
-  │   REPAIR_PROMPT ◀─┘                       RESUME_ENGINE   GIVE_UP
-  │          │                                        │
-  └──────────┴────────────────────────────────────────┘
-                                                      │
-                     one attempt left in budget ──▶ ESCALATE, a human is needed
+   ┌──────────────────────────────────────────────────────────┐
+   │  an envelope: a user message, a finished job, a timer,    │
+   │  a worker report, a peer message, a monitor signal        │
+   └───────────────────────────┬──────────────────────────────┘
+                               ▼
+        ASSEMBLE CONTEXT ──▶ MODEL ──▶ TOOL CALLS ──┐
+               ▲              compact first          │
+               │              when it must           │
+               └──── IDLE ◀──── the turn ends when ◀─┘
+                                the model asks for
+                                no more tools
 ```
 
-Every goal has a retry budget, and nothing above can exceed it.
+Every entry point submits an envelope into one session loop. The loop assembles
+context, calls the model, runs the tool calls it asks for, and ends the turn when
+it asks for none. Then it goes idle and waits for the next envelope.
 
-## Why the states exist
+There is no top-level DONE state, because a finished turn is not a finished run.
+That distinction is the whole point: a model that stops talking has stopped
+talking, which is not the same as having proved anything.
 
-**VERIFY** runs your real commands as real subprocesses and collects the exit codes. It is the only
-thing that can produce DONE. No amount of model confidence substitutes for it.
+## Why proof is a tool and not a state
 
-**The failure signature** is a hash of what actually went wrong. It is how the loop tells the
-difference between a run that is converging and a run that is spinning. If you take one failing test
-file from 40 failures to 5 to 1, the file you touched and the count of passing checks never change,
-but the signature does, and that counts as progress.
+**`verify`** is a native tool the model can call, and a Stop hook that runs when a
+worker tries to finish. It runs your real commands as real subprocesses and
+collects the exit codes. Nothing else can stand in for it, and no amount of model
+confidence substitutes for it.
 
-**RESUME_ENGINE** continues the same engine thread with the evidence attached, rather than starting a
-fresh prompt. It is what happens the first time a failure repeats exactly.
+The command behind each required check is snapshotted before the engine gets its
+first turn. Rewriting `"test"` to `"echo ok"` cannot manufacture a green result;
+the verifier detects the changed proof surface and refuses it.
 
-**ESCALATE** is the loop saying a human is needed, distinct from GIVE_UP, which is the budget running
-out.
+**The failure signature** is a hash of what actually went wrong. It is how a run
+tells the difference between converging and spinning. If you take one failing test
+file from 40 failures to 5 to 1, the file you touched and the count of passing
+checks never change, but the signature does, and that counts as progress.
 
-## The ledger
+**Ceilings are configuration, not constants.** `maxModelCallsPerEnvelope`,
+`maxToolCallsPerIteration`, `maxEnvelopeWallMs`, `maxDeliveryAttempts`,
+`maxWorkersInFlight` and `maxWorkerDepth` all live under `code.sessionLoop`. A run
+cannot exceed them, and you decide what they are.
 
-Every attempt appends one row: the tree hash, which files changed, how many checks passed, the
-failure signature, and a verdict for whether it was progress. That is what makes a crashed run
-resumable. It picks up the attempt counter, the failure history and the progress streak instead of
-starting from zero, and the repair prompt it builds names the checks that actually failed.
+## The record
 
-`recap.md` is the same story in prose, written when the goal ends.
+A session is durable. Its events are appended as they happen: what changed, which
+checks ran, the failure signature, and whether the attempt made measurable
+progress. That is what makes a crashed run resumable. It picks up the history
+instead of starting from zero, and the prompt it rebuilds names the checks that
+actually failed.
+
+## The previous loop
+
+Before 1.3.0 the top layer was a goal state machine that ran THINK, ACT, OBSERVE
+and VERIFY toward a DONE state. It is retained for one release behind
+`code.sessionLoop.enabled` set to `false`, and is scheduled for removal in 1.3.1.
+The session loop above is what runs by default.
 
 ## More than one model
 

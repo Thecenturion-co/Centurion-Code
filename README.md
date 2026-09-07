@@ -72,7 +72,7 @@ Download them from the [latest release](https://github.com/Thecenturion-co/Centu
 
 | Surface                       | What it gives you                                                                                                                                |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Proven goals**              | Runs the project's real typecheck, lint, test, and build commands. `DONE` requires every required check to exit `0`.                             |
+| **Proven work**               | Runs the project's real typecheck, lint, test, and build commands. Work is not reported as finished until every required check exits `0`.        |
 | **One multi-model workspace** | Uses your authenticated Codex, Claude, Grok, and Gemini CLIs. Switch provider, model, and supported effort without leaving the session.          |
 | **Advisor and council**       | Ask connected models to critique the active model, answer a question in parallel, or collect read-only cross-model review before accepting a result. |
 | **Parallel agents**           | Launch isolated workers, watch their live status and responses in the Agents panel, and reply into resumable worker threads.                     |
@@ -88,37 +88,43 @@ Download them from the [latest release](https://github.com/Thecenturion-co/Centu
 Centurion treats the model's “finished” message as a claim, not a conclusion.
 
 ```text
- GOAL
-   │
-   ▼
- THINK ──▶ ACT ──▶ OBSERVE ──▶ VERIFY ───────────────▶ DONE
-   ▲                             │                 every required
-   │                             │                 check exited 0
-   └──── REPAIR / RESUME ◀───────┘
-                                 └──▶ ESCALATE when the budget is spent
+ ENVELOPE ──▶ ASSEMBLE CONTEXT ──▶ MODEL ──▶ TOOL CALLS ──┐
+   ▲            compact first                             │
+   │            when it must                              │
+   │                                                      │
+   └──────── IDLE ◀──── turn ends when the model ◀────────┘
+                        asks for no more tools
 ```
+
+Every entry point submits an envelope into one session loop: a user message, a
+finished job, a timer, a worker report, a peer message, a monitor signal. The
+loop assembles context, calls the model, runs the tool calls it asks for, and
+ends the turn when it asks for none. Then it goes idle.
+
+There is no top-level DONE state, because a finished turn is not a finished
+run. Verification is a native `verify` tool the model can call, plus a Stop
+hook on workers, so proof is something the run performs rather than a state it
+declares. Ceilings are plain configuration under `code.sessionLoop`.
 
 The command behind each required check is snapshotted before the model gets its
 first turn. Rewriting `"test"` to `"echo ok"` cannot manufacture a green result;
 the verifier detects the changed proof surface and refuses it.
 
 Every attempt records what changed, which checks ran, the failure signature,
-and whether the run made measurable progress. A resumed goal continues from
+and whether the run made measurable progress. A resumed session continues from
 that evidence instead of beginning again with an empty prompt.
 
 [Read the complete loop and trust model →](./docs/HOW-IT-WORKS.md)
 
 ## Terminal workspace
 
-The 1.2.16 interface is a responsive, centered terminal workspace with one
-consistent steel-and-ink table system. Keyboard navigation reaches the command
-picker and the working panels without turning slash commands into chat turns.
-
-![Centurion Code 1.2.16 terminal workspace](./docs/assets/centurion-code-tui.png)
+The interface is a responsive, centered terminal workspace with one consistent
+steel-and-ink table system. Keyboard navigation reaches the command picker and
+the working panels without turning slash commands into chat turns.
 
 ```text
 Shells   running commands and captured output
-Tasks    the live, durable goal ledger
+Tasks    the live, durable work ledger
 Agents   active workers, model identity, status, and replies
 Docs     project documentation discovered for the session
 ```

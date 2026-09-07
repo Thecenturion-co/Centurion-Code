@@ -4,6 +4,41 @@ All notable changes to Centurion Code releases are documented here.
 The private source changelog is the release-note authority. This public copy keeps the downloadable
 product history readable without publishing the production source tree.
 
+## [1.3.0] - 2026-09-07
+
+### Changed
+
+- The top layer is now a session loop. Every entry point submits an envelope, a user message, a
+  finished job, a timer, a worker report, a peer message or a monitor signal, into one loop. The
+  loop assembles context, calls the model, runs the tool calls it asks for, and ends the turn when
+  it asks for none. There is no top-level DONE state, because a finished turn is not a finished run.
+- Verification is a native `verify` tool the model can call, plus a Stop hook on workers, rather
+  than a state the run passes through. It still runs your real commands as real subprocesses, and
+  the command behind each required check is still snapshotted before the engine gets a turn.
+- Ceilings are configuration under `code.sessionLoop`: `maxModelCallsPerEnvelope`,
+  `maxToolCallsPerIteration`, `maxEnvelopeWallMs`, `maxDeliveryAttempts`, `maxWorkersInFlight` and
+  `maxWorkerDepth`.
+- Swarm and workflow work runs on session workers.
+- Every catalog command carries a status and emits `command.completed`, with a generated contract
+  test that fails the build on catalog or registry drift.
+
+### Fixed
+
+- `/verify` reports a failed verification as failed. The result is bound to the current verification
+  run, so a passing verification from an earlier turn can no longer be read as this one's.
+- `centurion -p --output-format json` reports usage, cost and latency again instead of null, and
+  plain text output is the literal model answer rather than the redacted transcript copy. Persisted
+  transcripts stay redacted, and the JSON envelope keeps persistence-grade redaction.
+- Terminal lifecycle events are appended before lease release, so a release failure can no longer
+  swallow them.
+
+### Notes
+
+- The pre-1.3.0 goal state machine is retained for one release behind `code.sessionLoop.enabled`
+  set to `false`. Its removal is scheduled for 1.3.1.
+- Releases 1.2.17, 1.2.18 and 1.2.19 were published without an entry in this public changelog. Their
+  changes are carried forward in 1.3.0 rather than reconstructed here.
+
 ## [1.2.16] - 2026-08-27
 
 The reliability and collaboration release.

@@ -42,6 +42,7 @@ Read or change any of these with `/config <key>` and `/config <key> <value>` in 
 | `tui`                         | Whether the full terminal UI is used                                  |
 | `statusline`                  | Optional operator-supplied statusline command                         |
 | `workflowConcurrency`         | Maximum concurrent workflow agent calls, from 1 to 32                 |
+| `sessionLoop`                 | The session loop's ceilings, see below                                |
 
 `/config` is an actionable table in the TUI. Move to a row and press Enter to use its picker or
 editor; the active engine, model, and supported effort can also be changed directly through
@@ -88,7 +89,25 @@ code:
       required: true
 ```
 
-A `required` check must exit `0` before a goal can be DONE. Non-required checks are advisory.
+
+## Session loop ceilings
+
+The session loop's limits are configuration rather than constants. They live under `code.sessionLoop`
+and a run cannot exceed them.
+
+| Key                        | What it bounds                                            |
+| -------------------------- | --------------------------------------------------------- |
+| `maxModelCallsPerEnvelope` | Model calls spent on a single envelope                     |
+| `maxToolCallsPerIteration` | Tool calls the model may request in one iteration          |
+| `maxEnvelopeWallMs`        | Wall-clock time one envelope may take                      |
+| `maxDeliveryAttempts`      | Attempts to deliver an envelope before it is given up on   |
+| `maxWorkersInFlight`       | Workers running at once                                    |
+| `maxWorkerDepth`           | How deeply workers may launch further workers              |
+
+`enabled` also lives here. It defaults to `true`. Setting it to `false` retains the pre-1.3.0 goal
+state machine for one release; that path is scheduled for removal in 1.3.1.
+
+A `required` check must exit `0` before work can be reported as proven. Non-required checks are advisory.
 
 The command behind each check is snapshotted before the engine gets its first turn. If the engine
 rewrites that command mid-run, for example turning `"test"` into `"echo ok"`, the check fails with a
