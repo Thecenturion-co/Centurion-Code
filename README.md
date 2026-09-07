@@ -190,11 +190,11 @@ downgrade and swaps the executable atomically. On Windows it refreshes both
 
 ## Documentation
 
-- [How it works](./docs/HOW-IT-WORKS.md) — proof, retry policy, ledgers,
+- [How it works](./docs/HOW-IT-WORKS.md): proof, retry policy, ledgers,
   multi-model review, isolation, background sessions, and signed updates.
-- [Configuration](./docs/CONFIGURATION.md) — state locations, provider/model
+- [Configuration](./docs/CONFIGURATION.md): state locations, provider/model
   settings, permissions, memory, compaction, and proof checks.
-- [Security policy](./SECURITY.md) — report a vulnerability privately.
+- [Security policy](./SECURITY.md): report a vulnerability privately.
 
 ## Public repository boundary
 

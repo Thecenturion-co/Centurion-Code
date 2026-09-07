@@ -18,8 +18,8 @@ jobs:
           node-version: 24
       - name: Validate metadata and public links
         run: |
-          node -e "const p=require('./package.json'); if(p.version!=='1.2.16'||p.private!==true) process.exit(1)"
-          test -f docs/assets/centurion-code-tui.png
+          node -e "const p=require('./package.json'); const fs=require('fs'); const m=fs.readFileSync('CHANGELOG.md','utf8').match(/^## \[([0-9]+\.[0-9]+\.[0-9]+)\]/m); if(!m||p.version!==m[1]||p.private!==true) process.exit(1)"
+          test -f docs/assets/centurion-avatar.png
           grep -q 'releases/latest' README.md
           grep -q 'releases/latest' install.sh
           grep -q 'releases/latest' install.ps1
