@@ -74,14 +74,17 @@ Download them from the [latest release](https://github.com/Thecenturion-co/Centu
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Proven work**               | Runs the project's real typecheck, lint, test, and build commands. Work is not reported as finished until every required check exits `0`.        |
 | **One multi-model workspace** | Uses your authenticated Codex, Claude, Grok, and Gemini CLIs. Switch provider, model, and supported effort without leaving the session.          |
+| **Usage you can read**        | One usage contract across Codex, Claude, Grok, and Gemini. The activity line shows the live token figure and thinking state from that ledger. Cache the engine does not report is shown as unavailable, not as zero. |
 | **Advisor and council**       | Ask connected models to critique the active model, answer a question in parallel, or collect read-only cross-model review before accepting a result. |
+| **Questions from the model** | A turn can raise structured questions. The terminal and desktop can answer them. Headless runs can answer them through `--interaction-handler` before the session continues. |
 | **Parallel agents**           | Launch isolated workers, watch their live status and responses in the Agents panel, and reply into resumable worker threads.                     |
 | **Durable sessions**          | Resume after a crash with the transcript, attempt ledger, task state, model identity, and verification evidence intact.                          |
 | **Background work**           | Detach supported sessions into the local supervisor, inspect their logs, reattach, or stop the complete process tree.                            |
 | **Native tools**              | Read, search, edit, patch, run commands, monitor jobs, inspect Git, and work with GitHub or GitLab through the controlled tool surface.          |
 | **Operator controls**         | Explicit permission modes, allow/ask/deny rules, isolated worktrees, checkpoints, rewind, usage caps, and optional macOS workspace sandboxing.   |
 | **Memory and context**        | Search and edit project or user memory, compact long sessions, ask disposable side questions, and keep recurring facts without duplicating them. |
-| **Desktop handoff**           | A shared session/event protocol lets the Centurion desktop and remote-control surfaces mirror the terminal's real state.                         |
+| **Signed updates**            | Every release ships six binaries, checksums, a manifest, and an Ed25519 signature. The binary verifies those before it replaces itself.        |
+| **Desktop handoff**           | A shared session/event protocol lets the Centurion desktop and remote-control surfaces mirror the terminal's real state, including those questions. |
 
 ## The proof loop
 
@@ -118,9 +121,20 @@ that evidence instead of beginning again with an empty prompt.
 
 ## Terminal workspace
 
-The interface is a responsive, centered terminal workspace with one consistent
-steel-and-ink table system. Keyboard navigation reaches the command picker and
-the working panels without turning slash commands into chat turns.
+<img src="./docs/assets/centurion-tui.png" alt="Centurion Code terminal workspace: pixel-art helmet, version and active model banner, prompt box, and the Shells, Tasks, Agents and Docs taskbar" width="900">
+
+This is the terminal workspace at rest.
+
+The banner is the session identity. The pixel-art helmet sits above the product
+name, the shipped version (1.3.2), the active provider's live model, and the
+working directory. The same workspace runs on any connected provider. The model
+on that banner is the one this session is using.
+
+The prompt box is the input. Type a message or a slash command. Keyboard
+navigation reaches the command picker and the working panels without turning
+those commands into chat turns.
+
+The taskbar under the prompt is four panels:
 
 ```text
 Shells   running commands and captured output
@@ -129,7 +143,11 @@ Agents   active workers, model identity, status, and replies
 Docs     project documentation discovered for the session
 ```
 
-The same visual system is used for providers, models, effort, configuration,
+The footer is the measured ledger for this session: tokens, cache, remaining
+context, the live model, and the permission mode. Cache the engine does not
+report is shown as unavailable.
+
+The same table system is used for providers, models, effort, configuration,
 resume, advisor selection, approvals, and command help. Narrow terminals
 compact the header and tables instead of breaking their alignment.
 
@@ -167,6 +185,9 @@ one connected engine is required.
 | xAI / Grok         | Grok CLI or `centurion connect grok`      | `XAI_API_KEY` or `GROK_API_KEY`      |
 | Google / Gemini    | Gemini CLI or `centurion connect gemini`  | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
 
+Usage reporting is one contract on all four providers. The activity line reads
+from that ledger. Cache the engine does not report is shown as unavailable.
+
 OAuth credential files are not copied. API keys are imported only when you ask
 with `centurion env-sync apply`, and secret values are never printed.
 
@@ -187,6 +208,19 @@ Centurion verifies the manifest against the public key compiled into the
 binary, then checks the selected asset's URL, size, and SHA-256. It refuses a
 downgrade and swaps the executable atomically. On Windows it refreshes both
 `centurion.exe` and `cen.exe`.
+
+## What is next: 1.3.3
+
+1.3.3 is in progress. The working list is
+[milestone 4](https://gitlab.com/centurion5300319/centurion-code/-/milestones/4).
+
+- An Agents View dashboard, opened from the composer, that lists workers that need input, are running, completed, or failed.
+- First-class monitor and shell tools on every provider, with a Monitor tab that appears only while something is being watched.
+- An advisor the running agent can consult as a tool, with its own live line for model, thinking, and output tokens, then gone when the review ends.
+- Commands that take the rest of the prompt as plain language, and that still work when they appear in the middle of a sentence.
+- Token figures that count what the turn spent, not the context it re-sent.
+- Effort pickers that follow the live model after a `/model` switch, not the model left in config.
+- Sessions that keep what the previous turn already learned, instead of cold-starting the engine and re-deriving it.
 
 ## Documentation
 

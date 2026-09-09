@@ -104,8 +104,8 @@ and a run cannot exceed them.
 | `maxWorkersInFlight`       | Workers running at once                                    |
 | `maxWorkerDepth`           | How deeply workers may launch further workers              |
 
-`enabled` also lives here. It defaults to `true`. Setting it to `false` retains the pre-1.3.0 goal
-state machine for one release; that path is scheduled for removal in 1.3.1.
+`enabled` also lives here. It remains in the schema but no longer selects a second driver. The
+session loop is the only path.
 
 A `required` check must exit `0` before work can be reported as proven. Non-required checks are advisory.
 

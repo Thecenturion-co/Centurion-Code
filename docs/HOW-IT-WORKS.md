@@ -58,9 +58,9 @@ actually failed.
 ## The previous loop
 
 Before 1.3.0 the top layer was a goal state machine that ran THINK, ACT, OBSERVE
-and VERIFY toward a DONE state. It is retained for one release behind
-`code.sessionLoop.enabled` set to `false`, and is scheduled for removal in 1.3.1.
-The session loop above is what runs by default.
+and VERIFY toward a DONE state. 1.3.1 removed that driver.
+`code.sessionLoop.enabled` remains in the schema but no longer selects a second
+path. The session loop above is what runs.
 
 ## More than one model
 

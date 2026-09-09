@@ -4,6 +4,40 @@ All notable changes to Centurion Code releases are documented here.
 The private source changelog is the release-note authority. This public copy keeps the downloadable
 product history readable without publishing the production source tree.
 
+## [1.3.2] - 2026-09-09
+
+v1.3.2 makes 1.3.1 actually runnable. Harness control text stays out of chat.
+Plain conversational turns stay out of goal runs. Codex, Claude, Grok, and
+Gemini share one usage observability contract. The activity line shows the live
+token figure and thinking state.
+
+### Added
+
+- Provider usage observability now shares one contract across Codex, Claude, Grok, and Gemini.
+  Cache the engine does not report is shown as unavailable, not as zero.
+- The activity line enters a declared-effort thinking state before provider output, and its live
+  token figure comes from that shared ledger.
+- Session turns can raise structured questions. The terminal and desktop can answer them.
+  Headless runs can answer them through `--interaction-handler` before the session continues.
+
+### Changed
+
+- Harness control comments stay out of transcripts and recaps. Durable session logs reach chat
+  only when they are marked for the user.
+- Chat turns keep bare generic coding keywords such as `test` on the conversational path until the
+  prompt gives them context.
+- Tool success markers render green. The welcome header moves into scrollback when the first
+  prompt starts.
+- `/feedback` leaves unknown draft fields blank, quotes the operator's words as said, and does
+  not send, submit, approve, or post a draft.
+- Isolation cleanup keeps worktrees that still have changes. Explicit merge and discard still
+  remove them.
+
+### Notes
+
+- 1.3.1 removed the pre-1.3.0 goal driver. `code.sessionLoop.enabled` remains in the schema but no
+  longer selects a second driver.
+
 ## [1.3.0] - 2026-09-07
 
 ### Changed
