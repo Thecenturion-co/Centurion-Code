@@ -4,6 +4,67 @@ All notable changes to Centurion Code releases are documented here.
 The private source changelog is the release-note authority. This public copy keeps the downloadable
 product history readable without publishing the production source tree.
 
+## [1.3.3] - 2026-09-11
+
+v1.3.3 lets the workspace see and steer its agents. An in-process advisor
+answers beside the main agent. Sub-agent teams span providers. Agents View
+shows live and saved sessions full screen. Every provider can use Centurion's
+monitor and command tools. Fresh sessions recall the previous conversation.
+
+### Added
+
+- Native turns can ask a standing `/advisor` counterpart through `advisor_consult`. A bold live
+  line shows the advisor model, elapsed time, and output tokens, then leaves a receipt.
+- Cross-provider sub-agent teams launch one seat per provider through `agent_launch` from
+  `/code-review` and `/goal` team requests, and return one merged report.
+- Agents View: press LEFT on an empty prompt to open a full-screen view of live agents and saved
+  sessions.
+- Native turns on every provider, including Gemini auto, can use Centurion's `monitor` and
+  `run_command`, recorded on the process table.
+- Plug-and-play providers register a generic CLI adapter and prove cache, plan-mode refusal,
+  effort, and tool results against shared conformance fixtures. `centurion doctor --probe`
+  reports the capability matrix.
+- `send_feedback` drafts a structured, redacted feedback item that stays queued locally and is
+  never sent.
+- Fresh sessions recall the previous conversation in the same directory through a bounded
+  digest, and `memory_search` covers session recaps and summaries.
+- `/code-review` answers a fixed senior engineering checklist item by item.
+
+### Changed
+
+- Grok follow-up turns resume the vendor session instead of starting cold. Grok launches deny
+  provider-native scheduler and monitor tools that Centurion cannot see.
+- Failed provider calls share one failure class and message shape across Codex, Claude, Grok,
+  and Gemini, with the vendor error kept as detail.
+- Status headline tokens count generated output, not context occupancy. Gemini thinking is
+  reported beside output.
+- Session summaries always carry Task, Decisions, Files touched, Open threads, and Exact resume
+  steps.
+- Plan mode shows a blue footer chip. Mode-toggle commands echo once in the transcript.
+- CLI tables honor a terminal-wide width budget.
+- Turn receipts stop at `cooked for`, and the config panel Advisor row shows the advisor model
+  or `none`.
+- `/help` lists every command in its catalog group, and `/focus` refuses outside the TUI.
+
+### Fixed
+
+- `/init` no longer saves a start-ladder fallback as the project's active engine.
+- A live `/model` pick is no longer overwritten by a leftover legacy `config.model`, so the
+  Effort picker and welcome banner follow the chosen model.
+- Tool call status matches results by call id, so parallel calls keep their own verdicts.
+- OTLP/HTTP JSON export sends numeric status and span kind values a strict collector accepts.
+- Delayed Windows process-tree cleanup leaves a process alone unless it can prove the process is
+  its own.
+- The schedule executor stops cleanly when a store read fails during shutdown.
+- Binary release builds verify the size and format of every produced artifact.
+- `/rewind` restores a retained Git checkpoint after `git gc`.
+- A stalled sync-server subscriber can no longer grow the relay send buffer without bound.
+- A canceled or failed Codex or streaming turn waits for the vendor process before cleanup.
+
+### Notes
+
+- The wire protocol moves to 0.31.0. GoalSpec no longer carries `acceptance` or `retryBudget`.
+
 ## [1.3.2] - 2026-09-09
 
 v1.3.2 makes 1.3.1 actually runnable. Harness control text stays out of chat.

@@ -126,7 +126,7 @@ that evidence instead of beginning again with an empty prompt.
 This is the terminal workspace at rest.
 
 The banner is the session identity. The pixel-art helmet sits above the product
-name, the shipped version (1.3.2), the active provider's live model, and the
+name, the shipped version (1.3.3), the active provider's live model, and the
 working directory. The same workspace runs on any connected provider. The model
 on that banner is the one this session is using.
 
