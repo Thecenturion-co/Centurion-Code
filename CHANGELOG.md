@@ -4,6 +4,52 @@ All notable changes to Centurion Code releases are documented here.
 The private source changelog is the release-note authority. This public copy keeps the downloadable
 product history readable without publishing the production source tree.
 
+## [1.3.5] - 2026-10-01
+
+v1.3.5 puts the second opinion under your control. `/advisor` picks its model
+and effort from config dropdowns, and `/consult` runs a standing panel of 1 to
+10 consultants, each with its own model, connection (API key or OAuth) and
+effort, without touching the global auth preference. GPT 6.1 Sol joins the model
+picker. Goals that run on the session loop save memory again, write a recap, and
+keep a parked or retryable outcome when worker cleanup fails.
+
+### Added
+
+- `/advisor` chooses its model, then its effort, from dropdowns in `/config`, and the choice
+  persists across restarts.
+- `/consult` can run a standing personal panel of 1 to 10 consultant rows. A configured panel
+  launches exactly those seats in order, and fails only the seat whose connection is unavailable.
+- GPT 6.1 Sol is in the model picker and effort ladders.
+- `centurion daemon drain` and `centurion daemon resume` control whether the daemon accepts new
+  background work, and `centurion daemon restart-when-idle` lets an external supervisor relaunch it.
+
+### Changed
+
+- Cursor models come from the live `cursor-agent models` listing, so the picker and `/effort`
+  follow what Cursor actually offers.
+- A provider that is logged out stops with sign-in steps instead of retrying.
+
+### Fixed
+
+- A torn journal tail left by a crash is cut back on open, and the removed bytes are saved beside
+  the journal.
+- Goals run through the session loop keep their outcome, checks and resume path when worker
+  cleanup fails.
+
+## [1.3.4] - 2026-09-19
+
+v1.3.4 makes the loop run unattended. It lands the 24/7 orchestration series:
+crash safe assistant and tool shells, worker reclaim with heartbeats and a
+circuit breaker, recovery after an unclean shutdown, event driven wakes from
+schedules, jobs and monitors, stall detection for wedged children and hung
+engine CLIs, and a headless daemon that owns the brain so the terminal can die
+without taking the run with it. Consult and code review gain a live lifecycle
+and cross provider reviewer seats. Agents View lists and switches every
+conversation. Provider failures classify only from provider authored evidence,
+so tool output can no longer fake a quota death. Windows contains vendor CLIs in
+a Job Object, and turn receipts, credential provenance and persisted error text
+are recorded and redacted.
+
 ## [1.3.3] - 2026-09-11
 
 v1.3.3 lets the workspace see and steer its agents. An in-process advisor
