@@ -126,7 +126,7 @@ that evidence instead of beginning again with an empty prompt.
 This is the terminal workspace at rest.
 
 The banner is the session identity. The pixel-art helmet sits above the product
-name, the shipped version (1.3.3), the active provider's live model, and the
+name, the shipped version (1.3.5), the active provider's live model, and the
 working directory. The same workspace runs on any connected provider. The model
 on that banner is the one this session is using.
 
@@ -209,18 +209,10 @@ binary, then checks the selected asset's URL, size, and SHA-256. It refuses a
 downgrade and swaps the executable atomically. On Windows it refreshes both
 `centurion.exe` and `cen.exe`.
 
-## What is next: 1.3.3
+## What is next: 1.3.6
 
-1.3.3 is in progress. The working list is
-[milestone 4](https://gitlab.com/centurion5300319/centurion-code/-/milestones/4).
-
-- An Agents View dashboard, opened from the composer, that lists workers that need input, are running, completed, or failed.
-- First-class monitor and shell tools on every provider, with a Monitor tab that appears only while something is being watched.
-- An advisor the running agent can consult as a tool, with its own live line for model, thinking, and output tokens, then gone when the review ends.
-- Commands that take the rest of the prompt as plain language, and that still work when they appear in the middle of a sentence.
-- Token figures that count what the turn spent, not the context it re-sent.
-- Effort pickers that follow the live model after a `/model` switch, not the model left in config.
-- Sessions that keep what the previous turn already learned, instead of cold-starting the engine and re-deriving it.
+1.3.5 is shipped. The next release is 1.3.6. Each release is listed in the
+[changelog](./CHANGELOG.md) when it ships.
 
 ## Documentation
 
