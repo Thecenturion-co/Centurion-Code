@@ -4,6 +4,50 @@ All notable changes to Centurion Code releases are documented here.
 The private source changelog is the release-note authority. This public copy keeps the downloadable
 product history readable without publishing the production source tree.
 
+## [1.3.6] - 2026-11-01
+
+- Browser bridge MR1: `browser_open` and `browser_goto` drive one real Chromium
+  page per session and workspace through playwright-core, permissioned like
+  other powerful tools. `code.browser.channel: real` attaches the operator's
+  Chrome over CDP and only the user instruction layer may select it (part of
+  #101).
+- Browser page actions: `browser_click` and `browser_type` act on the open
+  session page. Each call is its own approval in default mode, and live URL
+  rules re-check the page before every action. Typed text is never echoed back
+  (part of #101).
+- `browser_screenshot` saves the open page's viewport as a PNG under
+  `.centurion/attachments`, behind the same approval and live URL checks. When
+  that directory chain fails the ledger privilege boundary, the call still
+  succeeds: nothing is saved, the result names the refused directory, and a
+  PNG within the 10 MiB attachment cap rides along as base64 data (part of
+  #101).
+- Browser page evaluation: `browser_eval` runs one JavaScript expression in the
+  open session page and returns its JSON value. Each call asks for approval in
+  every mode, including auto and bypass, and the approval shows the whole
+  script with its line breaks visible. A script that throws is reported as an
+  error and keeps the page open (part of #101).
+- Wire protocol version: 0.46.0 (moved from 0.45.0 to 0.46.0). Mailbox envelopes add optional `localPaths` metadata naming exact local paths for whole-span hiding in peer display. The change is additive: unmarked envelopes stay valid, and the mailbox wire adapter omits `localPaths` for peers below 0.46.0 because their v2 schemas are strict (#997).
+- Wire protocol version: 0.45.0 (moved from 0.44.0 to 0.45.0). Peer messages add optional harness, intent, point and reference display metadata. The relay withholds enriched events below 0.45.0 while legacy records retain their existing delivery floors (#914).
+- Wire protocol version: 0.44.0 (moved from 0.43.0 to 0.44.0). Owner-scoped schedule snapshots keep live status in the session; subscribers below 0.44.0 do not receive the new `schedule.state` event (#939).
+- Scheduled tasks show a dim gray running line and friendly named cadence and status rows. Recurring checks open Monitor, and one-off work stays in Tasks. Schedule surfaces hide internal ids, parent paths and JSON. `schedule list --json` is no longer supported; use the friendly list rows (#939).
+- Wire protocol version: 0.44.0 (moved from 0.43.0 to 0.44.0). The bump is an API-removal boundary, not a wire change: the deprecated compile-time exports UuidSchema, IsoDateSchema, redactSensitiveStructure, redactInteractionToolInput, CHECKPOINT_BLOB_REF_INTRODUCED, replicatedItemFieldPath, and ProviderKind/ProviderKindSchema are deleted, and a 0.43 peer reads every 0.44 event (#932).
+- Gemini 4 Argon is now the default Gemini model with its probed low, medium, and high agy ladder (agy 1.3.3 or later). Gemini 3.8 Flash and 3.7 Flash remain selectable and saved pins are preserved. Argon pricing and context window remain unknown.
+
+- `install.sh` and `install.ps1` now verify the signed release manifest before installing. Both download `manifest.json` plus `manifest.json.sig`, verify the detached Ed25519 signature against the release key baked into the script (the same key `centurion update` uses), and only then check the binary's sha256 and size. `checksums.txt` is no longer trusted on install. POSIX verifies with OpenSSL `pkeyutl -rawin`, then Node, then a built-in pure-bc verifier; Windows verifies on the .NET framework. A missing signature, tampered manifest, or mismatched binary aborts the install (#833).
+- Wire protocol version: 0.43.0 (moved from 0.42.0 to 0.43.0). Engine items add the activity_phase kind: a thinking or paused phase that is started or ended, with an opaque phaseId reused on the matching end. The producer stamps the native boundary time, and the relay withholds the new item from subscribers that negotiated an earlier protocol version (#988).
+- Wire protocol version: 0.42.0 (moved from 0.41.0 to 0.42.0). The canonical remote-command policy refuses local-only commands at the relay edge and at CLI dispatch, and the exact-version publisher handshake now refuses pre-policy publishers (no advertised version, or a version other than 0.42.0) before a command-capable session can form. The refusal names which case it saw. No wire shape changed (#991).
+- Wire protocol version: 0.41.0 (moved from 0.40.0 to 0.41.0). Message items add optional `messageStart` so a new assistant message stays distinct from a continuation delta, and optional `messageId` so a provider completion reconciles against the message it finishes instead of splitting it (#850).
+- Schedules saved before ownership was introduced stay paused until explicitly adopted with /schedule. Each session start reports their count; abandoned owned occurrences are recorded as missed after a 15-minute grace, and model tools delete by displayed name (#938).
+
+- Scheduled goals retry settled failures automatically, preserve pending work on adoption, and use full cadence for backoff and catch-up. Schedule management validates session flags and disambiguates duplicate names by creation time (#938).
+- Wire protocol stays at 0.40.0. The opt-in `mailbox.v2` envelope and registry contracts add harness, intent, point, thread, sequence and reference fields. Encoding requires both the fixed 0.40 protocol floor and the capability. Existing v1 peer events and remote actions keep their shapes (part of #913).
+- The mailbox foundation provides a durable registry with random local addresses, unique names, lease expiry, process proof, seven-day tombstones, and shared name resolution. CLI, relay and display adoption remain separate slices; see [the v2 contract](docs/mailbox/v2-foundation.md) (part of #913).
+- `centurion peer` gains a v2 path behind `--as`: `register --as <name> --harness <harness>` once, then `send`, `list` and `inbox` from later shell calls without a pid or session binding. Liveness is the registry lease, refreshed by every call, by `register --stay`, and by `inbox --wait`; an expired lease resolves as offline, still queueable, and revives on the next call inside the seven-day tombstone. Output is plain text with versioned JSON behind `--json`, and peer projections carry only name, harness, project, consumer and status. Live v1 peer registrations mirror into the v2 registry with their process proof, sends route by the recipient's consumer, and bridged TUI inboxes and pull-peer outboxes receive the legacy file shapes unchanged while other recipients get the wire envelope. No output or stored projection renders addresses, handles, session ids, pids or paths; see [the v2 CLI contract](docs/mailbox/v2-cli-identity.md) (part of #913).
+- Recorded the Claude Code interop decision for the mailbox: Centurion never posts into Claude Code native cross-session sockets; sanctioned wakes into a Claude Code session rank its Monitor tool, channels, then the asyncRewake hook. The generated harness skill carries the rule next to the peer messaging tools; see [the decision record](docs/mailbox/claude-code-interop.md) (#922, resolves the #855 decision item).
+
+- Codex toolless turns on CLI 0.160.0 deny `write_stdin_approval`. `codex features` help only documents listing and toggling flags, so the tool or egress effect is unknown (part of #794).
+- The Codex fence tripwire now tracks the newest published CLI: `pnpm codex:fence-drift --newest` evaluates the newest `@openai/codex` through `npm exec` under an empty `CODEX_HOME`, and the required tripwire path in `codex-toolless-features-snapshot.test.ts` runs it, so the scheduled job fails on unreviewed enabled features instead of staying pinned to the probed version. Codex toolless turns on CLI 0.162.1 deny `api_key_model_discovery`, `browser_annotation_api`, `in_app_voice`, `instant_interrupt` and `ultrafast_mode`, whose tool or egress effect the vendor help and README do not establish (part of #794).
+
 ## [1.3.5] - 2026-10-01
 
 v1.3.5 puts the second opinion under your control. `/advisor` picks its model
