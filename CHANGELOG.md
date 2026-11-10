@@ -4,6 +4,102 @@ All notable changes to Centurion Code releases are documented here.
 The private source changelog is the release-note authority. This public copy keeps the downloadable
 product history readable without publishing the production source tree.
 
+## [1.3.7] - 2026-11-10
+
+- Computer use groundwork: the wire protocol, client, fixture driver, config,
+  and tools, wired into the native tool surface behind `code.computerUse`
+  (off by default). Exposure needs `enabled` plus an absolute `helperPath`; a
+  relative helper path is dropped with a warning. Deny rules cover batch
+  actions, and terminals are click-only and browsers see-only (part of #1120).
+- The opt-in `run_script` tool uses a WASM sandbox, worker pool and host runner;
+  release binaries bundle its assets (part of #1118; #1119).
+- Agents view rows show the resolved harness and model (#870).
+- Run-app recipes can be observed in a browser with screenshot evidence (#144).
+- Agents View can start a session with a selected project, directory and
+  optional first prompt (#1109).
+- Agents View can archive, restore, delete and clean up sessions (#899).
+- Gemini native turns and headless sessions can use hosted MCP tools through the
+  native tool allowlist (#1151, #1157).
+- Routed audits report status through the daemon and `/orch`, with gated
+  notifications and baseline warnings (part of #886).
+- Provider conversations persist per agent for Codex, Claude and Gemini, with
+  cache usage reporting, per-call resumed Codex usage and lighter headless Codex
+  requests (#1189, #1209; part of #1180 and #1185).
+- One prompt-cache TTL setting is available across the core and CLI (part of
+  #1180).
+- Fresh local coding turns use a lean prompt profile that keeps project rules
+  and moves turn-specific content out of the stable prompt head (#1147).
+- Cen's replies are concise and direct, with diagrams only when they clarify a
+  point (#1194).
+- The mobile app can opt in to Expo push notifications and register or revoke a
+  device with the relay (#134).
+- Final assistant messages render once instead of appearing as duplicates
+  (#1133).
+- Peer command help now matches `/peers` (#1139).
+- Agents view rows show whole-conversation cost (#1131).
+- Agents view help no longer lists the retired cache legend (#1149).
+- GPT-6 Astra is reachable in both `/model` and `/advisor`, and stale top-level
+  model config explains how to remove it (#1135).
+- The TUI footer shows one permission state (#1134).
+- The TUI stops full-screen repaints while answers stream (#1132).
+- Policy-less courtesy peer messages can start without a turn (part of #888).
+- Gemini peers can wake through the native fence (#888).
+- Mailbox leases recover on heartbeat after expiry instead of failing (#1057).
+- Grok credential changes are detected from content changes (#1142).
+- The compaction prompt waits for a cold, measured context reading (#1137).
+- Codex oracle prompts keep a stable prefix and remove redundant prefix text;
+  resumed threads are not double-billed (#1136, #1146, #1173).
+- The Codex oracle treats Centurion's write tools as authorized when its own
+  sandbox is read-only, and limits mediated-write guidance to tool-less turns
+  (#1145, #1167).
+- Headless usage reports cached input and cache-write tokens (#1143).
+- Native grep searches all text files and supports file paths and basename globs
+  (#1169).
+- Verified Antigravity versions, including agy 1.5.0, can pass the Gemini
+  toolless contract (#1144, #1166).
+- Provider CLIs newer than the verified versions are no longer blocked from
+  starting (#1187).
+- Large Gemini oracle prompts go over stdin, with one retry for an
+  inspection-only stop (#1182).
+- Headless runs continue past 20 model calls, missing summaries, file-write
+  progress and incomplete final answers while budget remains; sessions no longer
+  stop on a wall clock (#1176, #1192, #1193, #1213).
+- Native tools accept unambiguous numbers, booleans and JSON values sent as
+  strings (#1208).
+- `mailbox_reply` accepts `number` and `message_number`, rejects ambiguous
+  aliases and checks authenticated senders before probing the local bridge
+  (part of #892).
+- Session maintenance reconciles deleted locators, bounds event scans and cuts
+  Windows trust probes (#1158).
+- Typed-memory warnings retain their file names (#1249).
+- The Agents view header uses a compact, solid Centurion avatar (#1127, #1219).
+- Retired AI model IDs are removed from Centurion Code while protocol, history
+  and denylist entries remain (#1203).
+- Darwin vendor cleanup defaults to the identity-pinned supervisor (part of
+  #678).
+- Claude oracle decisions use bounded structured JSON, retry format errors once,
+  honor the configured effort and reject tool-call markup as a final answer
+  (#1170, #1172, #1178).
+- The macOS computer-use helper revalidates its caller on every dispatch to
+  prevent an executed process from keeping a session (#1130).
+- The root turn is restricted to an allowlisted tool scope (#1150).
+- Nested ignore rules no longer widen into whole directories in the provider
+  preamble (#1179).
+- Shared display text strips terminal control sequences (part of #1224).
+- Transcript blocks are sanitized before they are split into lines (#1277).
+- New builds send telemetry, feedback ratings and `centurion report` to
+  `https://api.thecenturion.co/v1/ingest` by default. Existing installs remain
+  compatible through the `https://thecenturion.co/ingest` marketing-site rewrite
+  (#823).
+- The sync-server release adds a production relay package and a
+  machine-checkable deployment handoff (#106).
+- Release publishing now keeps front-door metadata in sync (#1128).
+- GitLab verify jobs retry runner infrastructure failures only, not test script
+  failures (!1931).
+- The `rcodesign` cache is ignored so release provenance can verify a clean tree
+  (!1937).
+- The sync-server `server.ts` is split along its seams (part of #834).
+
 ## [1.3.6] - 2026-11-01
 
 - Browser bridge MR1: `browser_open` and `browser_goto` drive one real Chromium
